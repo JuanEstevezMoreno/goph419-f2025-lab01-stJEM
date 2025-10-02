@@ -1,0 +1,22 @@
+Metadata-Version: 2.4
+Name: my_python_package
+Version: 0.0.1
+Summary: Starter package scaffold
+Author-email: Juan Estevez <juan.estevez@example.com>
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: License :: OSI Approved :: MIT License
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+
+# goph419-f2025-lab01-stJEM
+
+Starter repo created by newproj. To run:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ./
+python examples/driver.py
+```
