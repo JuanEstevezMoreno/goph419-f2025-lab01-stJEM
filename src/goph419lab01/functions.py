@@ -68,6 +68,27 @@ def arcsin(x, rtol=1e-9, atol=0.0, max_terms=10000):
 
     raise RuntimeError("arcsin series did not converge within max_terms")
 
+def _rhs_sin_phi0(ve_v0: float, alpha: float) -> float:
+    """
+    Cumpute RHS of Eq. 17: sin(phi0) = (1+alpha) * sqrt(1 - (ve/v0)^2 * alpha/(1+alpha))
+    """
+    if ve_v0 <= 0:
+        raise ValueError("ve_v0 must be positive.")
+    if alpha < 0:
+        raise ValueError ("alpha must be non-negative.")
+    
+    one_pa = 1.0 + alpha
+    inner = 1.0 - (ve_v0 *ve_v0) * (alpha / one_pa)
+
+    if inner < 0.0:
+        # No real solution, target altitude too large for given ve/v0
+        raise ValueError ("No real launch angle: Expression under sqrt is negative")
+    s = one_pa * sqrt(inner) 
+    if s < 0.0 or s > 1.0:
+        # Physically invalid
+        raise ValueError ("No real launch angle: sin(phi0) outside [0,1].")
+    return s
+
 def launch_angle(ve_v0, alpha):
     """Single launch angle from Eq.(17)."""
     #compute RHS of eq(17) then use arcsin()
