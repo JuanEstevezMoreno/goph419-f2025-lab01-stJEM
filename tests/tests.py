@@ -11,7 +11,9 @@ def test_arcsin():
     x = 0.5
     expected = np.arcsin(x)
     actual = arcsin(x)
-    print ("arcsin test:", np.isclose(expected, actual, atol=1e-8))
+    print ("expected:", expected)
+    print ("actual:", actual)
+    print ("abs error:", abs(expected-actual))
 
 def test_launch_angle_range():
     phi = launch_angle_range(2.0, 0.25, 0.02)

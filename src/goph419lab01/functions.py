@@ -34,7 +34,7 @@ def sqrt(x, rtol=1e-9, atol=0.0, max_terms=200):
     # Should converge by here
     raise RuntimeError("sqrt series did not converge within max_terms.")
 
-def arcsin(x, rtol=1e-9, atol=0.0, max_terms=10000):
+def arcsin(x, rtol=1e-12, atol=0.0, max_terms=10000):
     """
     arcsin(x) using power series on [0,1]
     Raises ValueError is x not in [0,1]
@@ -47,22 +47,18 @@ def arcsin(x, rtol=1e-9, atol=0.0, max_terms=10000):
     if x == 1.0:
         return math.pi/2.0
     
-    x2 = x * x
-    # k=0
-    a_k = 1.0 #a0 = 1
-    term = a_k * x
-    s = term
+    s = 0.0
+    term = x    #x^(2k+1)
+    a_k = 1.0   #coefficient a_0
+    s += a_k * term
 
     for k in range(0, max_terms):
-        # Update coefficient a_{k+1} from a_k:
-        num = (2*k +1)
-        a_k *= (num / (2**(k+1)))**2 * (num / (2*k + 3))
-
-        # Next term uses x^{2(k+1)+1} = x^{2k+3} + (x^{2k+1})*x^2
-        term *= x2
-        next_term = a_k * term # now equals a_{k+1} * x^2{(k+1)+1}
-        s_new = s + next_term
-        if abs(s_new -s) <= max(atol, rtol * abs(s_new)):
+        # recurrence for a_{k+1}/a_k
+        ratio = ((2*k + 1)**2 / (2.0 * (k + 1) * (2*k +3)))
+        a_k *= ratio
+        term *= x*x 
+        s_new = s + a_k * term
+        if abs(s_new - s) <= rtol * abs(s_new):
             return s_new
         s = s_new
 
