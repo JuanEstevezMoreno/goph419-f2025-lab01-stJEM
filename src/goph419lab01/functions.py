@@ -13,25 +13,32 @@ def sqrt(x, rtol=1e-9, atol=0.0, max_terms=200):
     if x == 1.0:
         return 1.0
     
-    #Choose base a to keep |(x-a)/a| <= ~0.5 for fast convergence
+   # --- scale x into a friendly range ~[0.5, 2.0] ---
+    y = x
+    scale = 1.0
+    while y < 0.5:
+        y *= 4.0     # multiply by 4
+        scale *= 0.5 # divide sqrt by 2
+    while y > 2.0:
+        y *= 0.25    # divide by 4
+        scale *= 2.0 # multiply sqrt by 2
+
+    # choose a base point near y
     candidates = np.array([0.5, 1.0, 1.5, 2.0])
-    a = float(candidates[np.argmin(np.abs(candidates - x))])
+    a = float(candidates[np.argmin(np.abs(candidates - y))])
 
-    t = (x-a)/a     # expansion variable
-    root_a = math.sqrt(a)   
+    t = (y - a) / a
+    root_a = math.sqrt(a)  # allowed for constant base
     c = 1.0
-    term = root_a * c
-    s = term
-
-    for n in range (1, max_terms + 1):
-        c *= (0.5 - (n-1)) / n
+    s = root_a * c         # n=0
+    for n in range(1, max_terms + 1):
+        c *= (0.5 - (n - 1)) / n
         term = root_a * c * (t ** n)
         s_new = s + term
-        if abs (s_new - s) <= max(atol, rtol * abs(s_new)):
-            return s_new
+        if abs(s_new - s) <= max(atol, rtol * abs(s_new)):
+            return scale * s_new
         s = s_new
 
-    # Should converge by here
     raise RuntimeError("sqrt series did not converge within max_terms.")
 
 def arcsin(x, rtol=1e-12, atol=0.0, max_terms=10000):
