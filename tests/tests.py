@@ -21,4 +21,3 @@ if __name__ == "__main__":
     test_sqrt()
     test_arcsin()
     test_launch_angle_range()
-

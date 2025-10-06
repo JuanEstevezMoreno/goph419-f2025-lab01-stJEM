@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-def sqrt(x, rtol=1e^-9, atol=0.0, max_terms=200):
+def sqrt(x, rtol=1e-9, atol=0.0, max_terms=200):
     """
     Positive square root using a binomial/Taylor series about a chosen base 'a'.
     Valid for 0.0 <= x <= 2.5
@@ -89,11 +89,33 @@ def _rhs_sin_phi0(ve_v0: float, alpha: float) -> float:
         raise ValueError ("No real launch angle: sin(phi0) outside [0,1].")
     return s
 
-def launch_angle(ve_v0, alpha):
-    """Single launch angle from Eq.(17)."""
-    #compute RHS of eq(17) then use arcsin()
-    return None #placeholder
+def launch_angle(ve_v0: float, alpha: float) -> float:
+    """
+    Single launch angle from Eq.(17).
+    """
+    s = _rhs_sin_phi0(ve_v0, alpha)
+    return arcsin(s)
 
-def launch_angle_range (ve_v0, alpha, tol_alpha):
-    """Min and max allowable launch angles."""
-    return np.array([None, None])
+def launch_angle_range (ve_v0: float, alpha: float, tol_alpha: float) -> np.ndarray:
+    """
+    Returns [phi_min, phi_max] in radians. 
+    Per lab spec:
+    - phi_min corresponds to max altitude (1 + tol_alpha)*alpha
+    - phi_max corresponds to min altitude (1 - tol_alpha)*alpha
+    """
+    if tol_alpha < 0:
+        raise ValueError("tol_alpha must be non-negative")
+    
+    alpha_hi = alpha * (1.0 + tol_alpha) #higher target
+    alpha_lo = alpha * (1.0 - tol_alpha) #lower target
+    if alpha_lo < 0.0:
+        raise ValueError("alpha*(1- tol_alpha) became negative; check inputs.")
+    
+    # Compute sin(phi) at bounds, then arcsin
+    s_hi = _rhs_sin_phi0(ve_v0, alpha_hi)
+    s_lo = _rhs_sin_phi0(ve_v0, alpha_lo)
+
+    phi_min = arcsin(s_hi) #min angle at higher alt
+    phi_max = arcsin(s_lo) #max anlge at lower alt
+
+    return np.array([phi_min, phi_max], dtype=float)

@@ -1,5 +1,9 @@
 README.md
 pyproject.toml
+src/goph419lab01/__init__.py
+src/goph419lab01/driver.py
+src/goph419lab01/functions.py
+src/goph419lab01/tests.py
 src/my_python_package/__init__.py
 src/my_python_package/operators.py
 src/my_python_package.egg-info/PKG-INFO
